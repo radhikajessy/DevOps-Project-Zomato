@@ -24,7 +24,6 @@ In this **DevOps project**, I demonstrate how to **deploy a ZOMATO Clone App** u
 
 ---
 
-![Uploading Screenshot (323).png…]()
 
 
 
