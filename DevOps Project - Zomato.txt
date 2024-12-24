@@ -1,7 +1,7 @@
-DevOps Project - Kastro
+DevOps Project
 Deployment of ZOMATO Project
 --------------------------------------------
-Repo URL: https://github.com/KastroVKiran/DevOps-Project-Zomato-Kastro.git
+Repo URL: https://github.com/radhikajessy/DevOps-Project-Zomato.git
 
 
 1. Launch an Instance (Ubuntu, 24.04, t2.large, 30 GB)
@@ -134,7 +134,7 @@ pipeline {
         }
         stage ("Git Checkout") {
             steps {
-                git 'https://github.com/KastroVKiran/Zomato-Project-Kastro.git'
+                git 'https://github.com/radhikajessy/DevOps-Project-Zomato.git'
             }
         }
         stage("Sonarqube Analysis"){
@@ -177,8 +177,8 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker') {
-                        sh "docker tag zomato kastrov/zomato:latest "
-                        sh "docker push kastrov/zomato:latest "
+                        sh "docker tag zomato radhi12/zomato:latest "
+                        sh "docker push radhi12/zomato:latest "
                     }
                 }
             }
@@ -187,16 +187,16 @@ pipeline {
             steps {
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh 'docker-scout quickview kastrov/zomato:latest'
-                       sh 'docker-scout cves kastrov/zomato:latest'
-                       sh 'docker-scout recommendations kastrov/zomato:latest'
+                       sh 'docker-scout quickview radhi12/zomato:latest'
+                       sh 'docker-scout cves radhi12/zomato:latest'
+                       sh 'docker-scout recommendations radhi12/zomato:latest'
                    }
                 }
             }
         }
         stage ("Deploy to Container") {
             steps {
-                sh 'docker run -d --name zomato -p 3000:3000 kastrov/zomato:latest'
+                sh 'docker run -d --name zomato -p 3000:3000 radhi12/zomato:latest'
             }
         }
     }
@@ -219,7 +219,7 @@ pipeline {
                 </body>
                 </html>
             """,
-            to: 'kastrokiran@gmail.com',
+            to: 'radhikajessi6@gmail.com',
             mimeType: 'text/html',
             attachmentsPattern: 'trivy.txt'
         }
@@ -474,10 +474,10 @@ Note 2: Run the VS Code Editor/Power Shell/Command Prompt as Administrator, to a
 
 Open vs code editor and execute the below commands; 
 Step 01: Create EKS Cluster using eksctl
-# Create Cluster. I will keep the cluster name as "kastrocluster"
-eksctl create cluster --name=kastrocluster \
-                      --region=ap-northeast-1 \
-                      --zones=ap-northeast-1a,ap-northeast-1c \
+# Create Cluster. I will keep the cluster name as "zomatocluster"
+eksctl create cluster --name=zomatocluster \
+                      --region=us-east-1 \
+                      --zones=us-east-1a,us-east-1b \
                       --without-nodegroup                  
 
 If you see any error while executing the above commands in VS Code Editor, it is due to how PowerShell interprets backslashes (\) as line continuation characters. Unlike Unix-like shells, PowerShell does not support line continuation in this way.
@@ -486,14 +486,14 @@ To resolve this issue, you can either write the entire command on a single line 
 
 Approach 1: Single Line Command (In this video i will prefer this)
 Simply run the entire command in one line without using backslashes for line continuation:
-eksctl create cluster --name=kastrocluster --region=ap-northeast-1 --zones=ap-northeast-1a,ap-northeast-1c --without-nodegroup
+eksctl create cluster --name=zomatocluster --region=us-east-1 --zones=us-east-1a,us-east-1b --without-nodegroup
 
 
 Approach 2: Use PowerShell’s Backtick for Line Continuation
 If you want to split the command across multiple lines, you can use the backtick character (`) in PowerShell for line continuation:
-eksctl create cluster --name=kastrocluster `
-                      --region=ap-northeast-1 `
-                      --zones=ap-northeast-1a,ap-northeast-1c `
+eksctl create cluster --name=zomatocluster `
+                      --region=us-east-1 `
+                      --zones=us-east-1a,us-east-1b `
                       --without-nodegroup
 
 Note: Make sure there is no space after the backtick.
@@ -520,33 +520,33 @@ eksctl utils associate-iam-oidc-provider \
 
 # Replace with region & cluster name
 eksctl utils associate-iam-oidc-provider \
-    --region ap-northeast-1 \
-    --cluster kastrocluster \
+    --region us-east-1 \
+    --cluster zomatocluster \
     --approve
 
 (OR)
-eksctl utils associate-iam-oidc-provider --region ap-northeast-1 --cluster kastrocluster --approve
+eksctl utils associate-iam-oidc-provider --region us-east-1 --cluster zomatocluster --approve
 
 (OR)
 eksctl utils associate-iam-oidc-provider `
-    --region uap-northeast-1 `
-    --cluster kastrocluster `
+    --region us-east-1 `
+    --cluster zomatocluster `
     --approve
 
 Step 03: Create Node Group with additional Add-Ons in Public Subnets
 These add-ons will create the respective IAM policies for us automatically within our Node Group role.
 
 # Create Public Node Group   
-eksctl create nodegroup --cluster=kastrocluster \
-                       --region=ap-northeast-1 \
-                       --name=kastrodemo-ng-public1 \
+eksctl create nodegroup --cluster=zomatocluster \
+                       --region=us-east-1 \
+                       --name=zomatodemo-ng-public1 \
                        --node-type=t3.medium \
                        --nodes=2 \
                        --nodes-min=2 \
                        --nodes-max=4 \
                        --node-volume-size=20 \
                        --ssh-access \
-                       --ssh-public-key=Prajwal \
+                       --ssh-public-key=aws_login \
                        --managed \
                        --asg-access \
                        --external-dns-access \
@@ -555,19 +555,19 @@ eksctl create nodegroup --cluster=kastrocluster \
                        --alb-ingress-access
 
 (OR)
-eksctl create nodegroup --cluster=kastrocluster --region=ap-northeast-1 --name=kastrodemo-ng-public1 --node-type=t3.medium --nodes=2 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=Prajwal --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
+eksctl create nodegroup --cluster=zomatocluster --region=us-east-1 --name=zomatodemo-ng-public1 --node-type=t3.medium --nodes=2 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=aws_login --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
 
 (OR)
-eksctl create nodegroup --cluster=kastrocluster `
-    --region=ap-northeast-1 `
-    --name=kastrodemo-ng-public1 `
+eksctl create nodegroup --cluster=zomatocluster `
+    --region=us-east-1a
+    --name=zomatodemo-ng-public1 `
     --node-type=t3.medium `
     --nodes=2 `
     --nodes-min=2 `
     --nodes-max=4 `
     --node-volume-size=20 `
     --ssh-access `
-    --ssh-public-key=Prajwal `
+    --ssh-public-key=aws_login `
     --managed `
     --asg-access `
     --external-dns-access `
@@ -587,16 +587,16 @@ eksctl get clusters
 
 # Capture Node Group name
 eksctl get nodegroup --cluster=<clusterName>
-eksctl get nodegroup --cluster=kastrocluster
+eksctl get nodegroup --cluster=zomatocluster
 
 # Delete Node Group
 eksctl delete nodegroup --cluster=<clusterName> --name=<nodegroupName>
-eksctl delete nodegroup --cluster=kastrocluster --name=kastrodemo-ng-public1
+eksctl delete nodegroup --cluster=zomatocluster --name=zomatodemo-ng-public1
 
 Step 07: Delete Cluster
 # Delete Cluster
 eksctl delete cluster <clusterName>
-eksctl delete cluster kastrocluster
+eksctl delete cluster zomatocluster
 ********************************************************************************
 ********************************************************************************
 Let us deploy the same application in the EKS cluster also
@@ -709,8 +709,6 @@ Note: If you see error in Prometheus under "k8s", open port number 9100 for the 
 After everything is done. Delete everything. Make sure to delete the Cloud Formation Stacks.
 
 ========================================================================================================
-Kind Request:
-Once after you have successfully deployed the App, kindly share your experience on LinkedIn by Tagging me and also provide the YouTube link of this project in your post, as it helps others to access the video quickly. 
-========================================================================================================
+
 												HAPPY LEARNING
 
